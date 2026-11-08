@@ -1,9 +1,11 @@
 # Celeste - Add shooting stars to your Minecraft server
 Celeste is a simple plugin that adds shooting stars to your Minecraft server. Inspired by the shooting stars from Animal Crossing and the falling stars from Breath of the Wild, this plugin brings some celestial ambience to your Minecraft world.
 
+This is the Greaper88 maintenance fork of Celeste by Idrees Hassan and contributors. Celeste 2.1 was modified on November 7, 2026 and is distributed under the GNU General Public License v3. [Fork releases](https://github.com/Greaper88/Celeste/releases) · [Original project](https://github.com/IdreesInc/Celeste) · [License](LICENSE) · [Third-party notices](NOTICE)
+
 [Check out the overview video](https://www.youtube.com/watch?v=TXdrECjVTiU)
 
-[Download the server plugin on Spigot](https://www.spigotmc.org/resources/celeste.81862/)
+[Original release on Spigot](https://www.spigotmc.org/resources/celeste.81862/)
 
 [Learn more about Celeste (the plugin, not the owl)](https://idreesinc.com/about-celeste.html?utm_source=github&utm_medium=readme&utm_campaign=celeste)
 
@@ -36,10 +38,12 @@ Additionally, the worlds that shooting and falling stars can spawn in must meet 
 - Will not spawn in the nether or end by default
 
 ## Configuration
-Installation is as simple as copying the newest build jar to your plugins folder. A configuration file is created by default, but if the file was created previously it may not include default values that were added in later updates. These values can be added easily by just copying and pasting the particular lines from the defaults below.
+Celeste 2.1 supports Spigot and Paper for Minecraft Java Edition 1.14 through 26.3. Use the Java version required by your server. Build with `mvn clean package`, then replace the old Celeste JAR in your server's `plugins` folder with `dist/Celeste-2.1.jar` and restart the server.
+
+Celeste creates a configuration file on first launch. For an existing installation, add the new reward entries you want under `falling-stars-loot` in `plugins/Celeste/config.yml`, then run `/celeste reload`. The same applies to worlds with their own `falling-stars-loot` section.
 ### Defaults
 ``` yaml
-# Whether to perform an update check when starting or reloading the plugin
+# Whether to check this fork's GitHub releases when starting or reloading the plugin
 check-for-updates: true
 # Whether to spawn shooting stars or not
 shooting-stars-enabled: true
@@ -74,6 +78,11 @@ falling-stars-loot:
   diamond: 60
   emerald: 20
   fire_charge: 20
+  amethyst_shard: 20
+  copper_ingot: 10
+  echo_shard: 1
+  cinnabar: 5
+  sulfur: 4
 # Whether to have meteor showers on nights with a new moon, increasing the spawn rates
 new-moon-meteor-shower: true
 # The number of shooting stars to create per minute during meteor showers
@@ -88,13 +97,13 @@ falling-stars-summon-text: "Make a wish!"
 debug: false
 ```
 ### Falling Star Loot
-Falling stars drop loot wherever they fall, and spark for 10 seconds (200 ticks) by default to show their location. The loot they drop is randomly selected from the loot table in the config, with each material being given a weight. For instance, in the default config, there is a 60% chance for a diamond, 20% of an emerald, and 20% chance of a fire_charge. Experience also drops from falling stars, 100 points (not levels) by default.
+Falling stars drop loot wherever they fall, and spark for 10 seconds (200 ticks) by default to show their location. Each item's chance is its weight divided by the sum of the available items' weights. Amethyst shards and copper ingots join the pool on 1.17, echo shards on 1.19, and cinnabar and sulfur on 26.2. An echo shard is about a 0.7% drop with the full default pool. Falling stars also drop 100 experience points by default.
 
 **You have the option of defining a simple list of items in the config or using Minecraft's built-in [loot table](https://minecraft.fandom.com/wiki/Loot_table) system.** The config-based loot system is simpler as it doesn't require messing with data packs, but it is limited to only one item at a time and is unable to produce items with NBT data attached. For more advanced loot, you'll probably want to use loot tables. Note that both kinds of loot configurations can be used at the same time if you wish to do so for whatever reason.
 
 #### Simple Config-Based Loot
 
-To define a simple list of potential loot that can appear, add the `falling-stars-loot` attribute to your config (remember, you will have to create the plugin config if it doesn't already exist) and list each item you want as well as the probability for it to appear. **The names of the items must be from the list provided [here](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html)**. Remember to only add materials available in your server version. Using this method, only one item will spawn at a time. If you want to spawn more items at once or add NBT data to the items spawned, you'll need to use loot tables (more on that below).
+To define a simple list of potential loot, list each item under `falling-stars-loot` with a positive weight. Celeste skips materials that are unavailable or cannot be dropped as items on the running server. Simple loot drops one item at a time. Use a Minecraft loot table to drop multiple items or add item data. [Spigot material names](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html)
 
 Here is an example of a custom config-based loot configuration:
 

@@ -1,5 +1,5 @@
 package com.idreesinc.celeste.utilities;
-//From https://gamedev.stackexchange.com/a/162987
+// Adapted from Philipp's CC BY-SA 4.0 example. See NOTICE.
 
 import java.util.ArrayList;
 import java.util.List;

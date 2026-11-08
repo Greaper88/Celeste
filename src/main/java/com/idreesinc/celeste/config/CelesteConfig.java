@@ -4,7 +4,12 @@ import com.idreesinc.celeste.utilities.WeightedRandomBag;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.Locale;
+import java.util.logging.Logger;
+
 public class CelesteConfig {
+    private final Logger logger;
+
     public boolean newMoonMeteorShower;
     public int beginSpawningStarsTime;
     public int endSpawningStarsTime;
@@ -23,16 +28,18 @@ public class CelesteConfig {
     public double fallingStarsVolume;
     public int fallingStarsSparkTime;
     public int fallingStarsExperience;
-    public WeightedRandomBag<String> fallingStarSimpleLoot;
+    public WeightedRandomBag<Material> fallingStarSimpleLoot;
     public String fallingStarLootTable;
 
-    public CelesteConfig(ConfigurationSection section) {
+    public CelesteConfig(ConfigurationSection section, Logger logger) {
         // Used to build the global config
+        this.logger = logger;
         buildFromConfigurationSection(section);
     }
 
     public CelesteConfig(ConfigurationSection section, CelesteConfig globalConfig) {
         // Used to build per-world configs
+        this.logger = globalConfig.logger;
         buildFromConfigurationSectionWithGlobal(section, globalConfig);
     }
 
@@ -58,7 +65,7 @@ public class CelesteConfig {
 
         fallingStarLootTable = section.getString("falling-stars-loot-table");
         if (section.isSet("falling-stars-loot")) {
-            fallingStarSimpleLoot = calculateSimpleLoot(section.getConfigurationSection("falling-stars-loot"));
+            fallingStarSimpleLoot = calculateSimpleLoot(section);
         }
     }
 
@@ -88,7 +95,7 @@ public class CelesteConfig {
             // table, the end result will be a config with the loot table set and the simple table empty
             fallingStarLootTable = section.getString("falling-stars-loot-table");
             if (section.isSet("falling-stars-loot")) {
-                fallingStarSimpleLoot = calculateSimpleLoot(section.getConfigurationSection("falling-stars-loot"));
+                fallingStarSimpleLoot = calculateSimpleLoot(section);
             }
         } else {
             fallingStarLootTable = globalConfig.fallingStarLootTable;
@@ -96,14 +103,21 @@ public class CelesteConfig {
         }
     }
 
-    public WeightedRandomBag<String> calculateSimpleLoot(ConfigurationSection loot) {
-        WeightedRandomBag<String> fallingStarDrops = new WeightedRandomBag<>();
+    private WeightedRandomBag<Material> calculateSimpleLoot(ConfigurationSection section) {
+        ConfigurationSection loot = section.getConfigurationSection("falling-stars-loot");
+        WeightedRandomBag<Material> fallingStarDrops = new WeightedRandomBag<>();
+        if (loot == null) {
+            logger.warning("Expected a mapping of item names to weights in falling-stars-loot");
+            return fallingStarDrops;
+        }
+
         for (String key : loot.getKeys(false)) {
-            try {
-                Material.valueOf(key.toUpperCase());
-                fallingStarDrops.addEntry(key.toUpperCase(), loot.getDouble(key));
-            } catch (IllegalArgumentException e) {
-                System.err.println("Error: Item with name " + key.toUpperCase() + " does not exist, skipping");
+            Material material = Material.getMaterial(key.toUpperCase(Locale.ROOT));
+            double weight = loot.getDouble(key, 0);
+            if (material == null || material.isLegacy() || !material.isItem() || material.isAir()) {
+                logger.warning("Skipping falling star loot '" + key + "' because it is not an item on this server version");
+            } else if (weight > 0 && Double.isFinite(weight)) {
+                fallingStarDrops.addEntry(material, weight);
             }
         }
         return fallingStarDrops;

@@ -20,7 +20,7 @@ public class CelesteConfigManager {
 	public void processConfigs() {
 		this.worldConfigs.clear();
 		FileConfiguration config = this.celeste.getConfig();
-		globalConfig = new CelesteConfig(config);
+		globalConfig = new CelesteConfig(config, this.celeste.getLogger());
 		ConfigurationSection worlds = config.getConfigurationSection("world-overrides");
 		if (worlds != null) {
 			for (String world : worlds.getKeys(false)) {

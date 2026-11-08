@@ -1,3 +1,4 @@
+# Check this fork's GitHub releases when starting or reloading Celeste.
 check-for-updates: true
 shooting-stars-enabled: true
 falling-stars-enabled: true
@@ -12,10 +13,16 @@ falling-stars-sound-enabled: true
 falling-stars-volume: 6
 falling-stars-spark-time: 200
 falling-stars-experience: 100
+# Each weight applies only on servers where that item is available.
 falling-stars-loot:
- diamond: 60
- emerald: 20
- fire_charge: 20
+  diamond: 60
+  emerald: 20
+  fire_charge: 20
+  amethyst_shard: 20
+  copper_ingot: 10
+  echo_shard: 1
+  cinnabar: 5
+  sulfur: 4
 new-moon-meteor-shower: true
 shooting-stars-per-minute-during-meteor-showers: 15
 falling-stars-per-minute-during-meteor-showers: 0.3

@@ -39,19 +39,7 @@ public class Celeste extends JavaPlugin {
 
     public void checkForUpdates() {
         if (this.getConfig().getBoolean("check-for-updates")) {
-            new UpdateChecker(this, 81862).getVersion(version -> {
-                try {
-                    double current = Double.parseDouble(this.getDescription().getVersion());
-                    double api = Double.parseDouble(version);
-                    if (current < api) {
-                        this.getLogger().info("There is an update available for Celeste (" + current + " -> " + api + ")");
-                    }
-                } catch (NumberFormatException e) {
-                    if (this.getConfig().getBoolean("debug")) {
-                        this.getLogger().severe("Unable to process remote plugin version number '" + version + "'");
-                    }
-                }
-            });
+            new UpdateChecker(this).check();
         }
     }
 }

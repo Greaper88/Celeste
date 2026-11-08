@@ -13,6 +13,18 @@ import java.util.Random;
 
 public class CelestialSphere {
 
+    static final Particle FIREWORK = resolveParticle("FIREWORK", "FIREWORKS_SPARK");
+    private static final Particle POOF = resolveParticle("POOF", "EXPLOSION_NORMAL");
+
+    // Minecraft 1.20.5 renamed these particle constants.
+    private static Particle resolveParticle(String currentName, String oldName) {
+        try {
+            return Enum.valueOf(Particle.class, currentName);
+        } catch (IllegalArgumentException e) {
+            return Enum.valueOf(Particle.class, oldName);
+        }
+    }
+
     public static void createShootingStar(Celeste celeste, Player player) {
         createShootingStar(celeste, player, true);
     }
@@ -42,10 +54,10 @@ public class CelestialSphere {
         Vector direction = new Vector(new Random().nextDouble() * 2 - 1, new Random().nextDouble() * -0.75d, new Random().nextDouble() * 2 - 1);
         direction.normalize();
         double speed = new Random().nextDouble() * 2 + 0.75;
-        location.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, starLocation, 0, direction.getX(),
+        location.getWorld().spawnParticle(FIREWORK, starLocation, 0, direction.getX(),
                 direction.getY(), direction.getZ(), speed, null, true);
         if (new Random().nextDouble() >= 0.5) {
-            location.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, starLocation, 0, direction.getX(),
+            location.getWorld().spawnParticle(POOF, starLocation, 0, direction.getX(),
                     direction.getY(), direction.getZ(), speed, null, true);
         }
         if (celeste.getConfig().getBoolean("debug")) {

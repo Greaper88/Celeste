@@ -5,6 +5,7 @@ out
 gen
 *.lnk
 target/
+/dist/
 .classpath
 .project
 .settings/
